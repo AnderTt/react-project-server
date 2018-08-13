@@ -25,20 +25,18 @@ router.post('/register',function (req,res) {
     if(userDoc){//说明此用户存在
       res.send({code: 1, msg: '此用户已存在'});
     }else {//说明此用户不存在
-      //数据保存到数据库中
+      //处理数据：数据保存到数据库中(创建文档对象)
       const userModel = new UserModel({username, password: md5(password), type});
       userModel.save((error,userDoc)=>{
         console.log('save()',error,userDoc);
 
         //生成cookie,注册成功后自动登录，且七天内有效
         res.cookie('userId',userDoc._id, {maxAge: 1000*60*60*24*7});
-
-        //注册成功
+        //注册成功，返回响应
         res.send({code: 0, data: {_id: userDoc._id, username, password}});
       });
     }
   })
-  //返回响应
 });
 
 //登录路由
@@ -50,12 +48,12 @@ router.post('/login',function (req,res) {
     if(userDoc){//此用户存在可以直接登录（登录成功）
       //生成cookie,七天内自动登录
       res.cookie('userId',userDoc._id, {maxAge: 1000*60*60*24*7});
-      //登录成功
+      //登录成功，返回响应
       res.send({code: 0, data: userDoc})
-    }else{//登录失败
+    }else{
+      //登录失败，返回响应
       res.send({code: 1, msg: '用户名或密码错误'})
     }
-    
   })
 });
 module.exports = router;
