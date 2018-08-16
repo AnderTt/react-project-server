@@ -83,12 +83,26 @@ router.post('/update', function (req, res) {
 router.get('/user', function (req, res) {
   // 取出cookie中的userid
   const userid = req.cookies.userid;
-  if(!userid) {
+  console.log(userid,'001');
+  if(!userid) {//cookie中的userid不正确
+    req.clearCookie('userid')
     return res.send({code: 1, msg: '请先登陆'})
   }
   // 查询对应的user
   UserModel.findOne({_id: userid}, filter, function (err, user) {
+    console.log(user,'002')
     return res.send({code: 0, data: user})
+  })
+});
+
+//查看用户列表
+router.get('/userlist',function(req, res){
+  const { type } = req.query;
+  console.log(type)
+  UserModel.find({type},function(err,users){
+    console.log(users);
+    return res.json({code:0, data: users})
+
   })
 });
 module.exports = router;
