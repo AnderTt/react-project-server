@@ -1,9 +1,10 @@
 /*
 启动socket.io服务的函数
  */
+// 引入操作chats集合数据的Model
+const ChatModel = require('../db/models').ChatModel;
 module.exports = function (server) {
-  // 引入操作chats集合数据的Model
-  const ChatModel = require('../db/models').ChatModel;
+
   // 得到操作服务器端sokectIO的io对象
   const io = require('socket.io')(server);
 
@@ -18,7 +19,7 @@ module.exports = function (server) {
       //chat_id = [from, to].sort().join('_');
       const chat_id = [from, to].sort().join('_');
       const create_time = Date.now();
-      const chatModel = new ChatModel({chat_id, from, to, create_time, content});
+      const chatModel = new ChatModel({content, from, to, chat_id, create_time});
       chatModel.save(function (err, chatMsg) {
         // 保存完成后, 向所有连接的客户端发送消息
         io.emit('receiveMsg', chatMsg); // 全局发送, 所有连接的客户端都可以收到
